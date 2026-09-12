@@ -1,0 +1,15 @@
+{
+  "name": "66 Days Life Reset",
+  "short_name": "66 Days",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#07110d",
+  "theme_color": "#07110d",
+  "icons": [
+    {
+      "src": "file_000000007ee88209a586064eb04cf924.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

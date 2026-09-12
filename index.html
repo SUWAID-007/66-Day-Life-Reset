@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#071923">
+<title>66 Days — Life Reset</title>
+<style>
+:root{--bg:#071923;--card:#102b35;--card2:#153842;--text:#f4f8f8;--muted:#9db2b7;--accent:#55e6a5;--accent2:#ffd15c;--danger:#ff7185}
+*{box-sizing:border-box} body{margin:0;background:linear-gradient(180deg,#06141d,#092630);color:var(--text);font:16px system-ui,-apple-system,Segoe UI,sans-serif}
+.app{max-width:520px;margin:auto;min-height:100vh;padding-bottom:92px}.top{padding:28px 20px 12px}.top h1{margin:0;font-size:27px}.top p{margin:5px 0;color:var(--muted)}
+.card{background:rgba(16,43,53,.96);border:1px solid rgba(255,255,255,.06);border-radius:20px;margin:12px 16px;padding:18px;box-shadow:0 8px 30px #0003}
+.hero{background:linear-gradient(135deg,#124653,#0d2d36)}.row{display:flex;justify-content:space-between;gap:12px;align-items:center}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:16px}.stat{background:#09232c;border-radius:14px;padding:12px;text-align:center}.stat b{display:block;font-size:22px}.stat span{font-size:12px;color:var(--muted)}
+.progress{height:9px;background:#24414a;border-radius:20px;overflow:hidden;margin:10px 0}.bar{height:100%;background:var(--accent);border-radius:20px}
+button,input,textarea{font:inherit} button{border:0;border-radius:14px;padding:12px 15px;background:var(--accent);color:#062017;font-weight:800;cursor:pointer}button.secondary{background:#203e48;color:var(--text)}button.danger{background:#542b34;color:#fff}
+.habit{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid #ffffff10}.habit:last-child{border-bottom:0}.check{width:27px;height:27px;border-radius:50%;border:2px solid #668087;display:grid;place-items:center;flex:none}.done .check{background:var(--accent);border-color:var(--accent);color:#052019}.done .label{text-decoration:line-through;color:#91a6ab}
+nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);max-width:520px;width:100%;background:#081a22ee;backdrop-filter:blur(15px);display:grid;grid-template-columns:repeat(4,1fr);padding:10px 8px calc(10px + env(safe-area-inset-bottom));border-top:1px solid #ffffff12}nav button{background:none;color:var(--muted);padding:8px;font-size:12px}nav button.active{color:var(--accent)}
+.screen{display:none}.screen.active{display:block}.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:7px}.day{aspect-ratio:1;border-radius:10px;background:#203c46;display:grid;place-items:center;font-size:12px;cursor:pointer}.day.done{background:var(--accent);color:#052019}.day.today{outline:2px solid var(--accent2)}.day.selected{outline:2px solid white}
+textarea{width:100%;min-height:180px;border:1px solid #ffffff12;border-radius:15px;background:#09232c;color:var(--text);padding:14px;resize:vertical}input{width:100%;background:#09232c;border:1px solid #ffffff12;color:var(--text);padding:12px;border-radius:12px}
+.small{font-size:13px;color:var(--muted)}h2{font-size:20px;margin:4px 0 12px}.pill{padding:6px 10px;border-radius:99px;background:#1d414a;color:var(--accent);font-size:12px;font-weight:700}.empty{text-align:center;padding:35px 10px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="app">
+  <div id="home" class="screen active">
+    <header class="top"><h1>Good morning 👊</h1><p>Small steps. Big changes.</p></header>
+    <section class="card hero">
+      <div class="row"><div><div class="small">YOUR RESET</div><h2 id="dayTitle">Day 1 of 66</h2></div><span class="pill" id="percent">0%</span></div>
+      <div class="progress"><div class="bar" id="bar"></div></div>
+      <div class="stats"><div class="stat"><b id="streak">0</b><span>day streak</span></div><div class="stat"><b id="completed">0</b><span>days done</span></div><div class="stat"><b id="left">66</b><span>days left</span></div></div>
+    </section>
+    <section class="card"><div class="row"><h2>Today's reset</h2><span id="todayDate" class="small"></span></div><div id="homeHabits"></div></section>
+  </div>
+
+  <div id="calendar" class="screen">
+    <header class="top"><h1>66-Day Calendar</h1><p>Tap a day to view or complete it.</p></header>
+    <section class="card"><div class="calendar" id="calendarGrid"></div></section>
+    <section class="card"><h2>Milestones</h2><div id="milestones"></div></section>
+  </div>
+
+  <div id="journal" class="screen">
+    <header class="top"><h1>Journal</h1><p id="journalDay">Day 1</p></header>
+    <section class="card"><h2>How are you feeling?</h2><textarea id="journalText" placeholder="Write about your wins, challenges, thoughts, or anything on your mind..."></textarea><br><br><button onclick="saveJournal()">Save entry</button></section>
+    <section class="card"><h2>Today's intention</h2><input id="intention" placeholder="What matters most today?"><br><br><button onclick="saveIntention()">Save intention</button></section>
+  </div>
+
+  <div id="settings" class="screen">
+    <header class="top"><h1>Settings</h1><p>Make the challenge yours.</p></header>
+    <section class="card"><h2>Your habits</h2><p class="small">Edit the habits shown every day.</p><div id="habitInputs"></div><br><button onclick="saveHabits()">Save habits</button></section>
+    <section class="card"><h2>Reset progress</h2><p class="small">This permanently clears your local challenge data.</p><button class="danger" onclick="resetAll()">Reset everything</button></section>
+  </div>
+</div>
+
+<nav>
+<button class="active" onclick="show('home',this)">⌂<br>Home</button>
+<button onclick="show('calendar',this)">▦<br>Calendar</button>
+<button onclick="show('journal',this)">✎<br>Journal</button>
+<button onclick="show('settings',this)">⚙<br>Settings</button>
+</nav>
+
+<script>
+const KEY='lifeReset66_v1';
+const defaultData={start:null, days:{}, journals:{}, intentions:{}, habits:['Drink 8 glasses of water','30 minutes of movement','Eat healthy','Read for 20 minutes','Journal your thoughts']};
+let data=JSON.parse(localStorage.getItem(KEY)||'null')||defaultData;
+if(!data.start){data.start=new Date().toISOString().slice(0,10);save()}
+function save(){localStorage.setItem(KEY,JSON.stringify(data))}
+function dayNum(){
+ const s=new Date(data.start+'T00:00:00'), n=new Date(); n.setHours(0,0,0,0);
+ return Math.min(66,Math.max(1,Math.floor((n-s)/86400000)+1));
+}
+function doneDays(){return Object.values(data.days).filter(x=>x).length}
+function streak(){let s=0;for(let i=dayNum();i>=1;i--){if(data.days[i])s++;else if(i!==dayNum())break}return s}
+function toggleHabit(i){let d=data.days[dayNum()]||[]; if(!Array.isArray(d))d=[];d[i]=!d[i];data.days[dayNum()]=d;save();render()}
+function completeDay(n){let d=data.days[n]||[];data.days[n]=data.habits.map(()=>true);save();render()}
+function render(){
+ const n=dayNum(), total=doneDays(), pct=Math.round(total/66*100);
+ document.getElementById('dayTitle').textContent=`Day ${n} of 66`;document.getElementById('percent').textContent=pct+'%';
+ document.getElementById('bar').style.width=pct+'%';document.getElementById('streak').textContent=streak();document.getElementById('completed').textContent=total;document.getElementById('left').textContent=66-total;
+ document.getElementById('todayDate').textContent=new Date().toLocaleDateString(undefined,{month:'short',day:'numeric'});
+ renderHabits('homeHabits',n);renderCalendar();renderJournal(n);renderSettings()
+}
+function renderHabits(id,n){let el=document.getElementById(id),d=data.days[n]||[];el.innerHTML=data.habits.map((h,i)=>`<div class="habit ${d[i]?'done':''}" onclick="toggleHabit(${i})"><div class="check">${d[i]?'✓':''}</div><div class="label">${esc(h)}</div></div>`).join('')+`<button style="margin-top:12px;width:100%" onclick="completeDay(${n})">Complete today's reset</button>`}
+function renderCalendar(){let g=document.getElementById('calendarGrid');g.innerHTML='';for(let i=1;i<=66;i++){let c=document.createElement('div');c.className='day'+(data.days[i]?' done':'')+(i===dayNum()?' today':'');c.textContent=i;c.onclick=()=>{if(i<=dayNum())completeDay(i)};g.appendChild(c)}
+let ms=[7,14,30,45,66];document.getElementById('milestones').innerHTML=ms.map(m=>`<div class="habit"><div class="check">${data.days[m]?'✓':'★'}</div><div><b>Day ${m}</b><div class="small">${data.days[m]?'Completed!':'Keep going — '+Math.max(0,m-dayNum())+' days to go'}</div></div></div>`).join('')}
+function renderJournal(n){document.getElementById('journalDay').textContent=`Day ${n}`;document.getElementById('journalText').value=data.journals[n]||'';document.getElementById('intention').value=data.intentions[n]||''}
+function saveJournal(){data.journals[dayNum()]=document.getElementById('journalText').value;save();alert('Journal saved ✓')}
+function saveIntention(){data.intentions[dayNum()]=document.getElementById('intention').value;save();alert('Intention saved ✓')}
+function renderSettings(){document.getElementById('habitInputs').innerHTML=data.habits.map((h,i)=>`<input id="h${i}" value="${esc(h)}" style="margin:5px 0">`).join('')}
+function saveHabits(){data.habits=data.habits.map((_,i)=>document.getElementById('h'+i).value.trim()||'New habit');save();render();alert('Habits updated ✓')}
+function resetAll(){if(confirm('Reset all 66-day progress, journals and settings?')){localStorage.removeItem(KEY);location.reload()}}
+function show(id,btn){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));btn.classList.add('active');render()}
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+render();
+</script>
+</body>
+</html>
